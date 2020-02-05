@@ -8,14 +8,14 @@ namespace MonoGameWindowsStarter
 {
     class TriangleHitBox
     {
-        public int x1;
-        public int x2;
-        public int x3;
-        public int y1;
-        public int y2;
-        public int y3;
+        public double x1;
+        public double x2;
+        public double x3;
+        public double y1;
+        public double y2;
+        public double y3;
 
-        public TriangleHitBox(int x1, int x2, int x3, int y1, int y2, int y3)
+        public TriangleHitBox(double x1, double x2, double x3, double y1, double y2, double y3)
         {
             this.x1 = x1;
             this.x2 = x2;

@@ -11,24 +11,54 @@ namespace MonoGameWindowsStarter
 {
     class GhostShip
     {
-        public TriangleHitBox hitBox;
+        public CircleHitBox hitBox;
         Texture2D  texture;
         Vector2 location;
         Vector2 rotation;
 
-        public GhostShip()
+        double X;
+        double Y;
+
+        int screenWidth;
+        int screenHeight;
+
+        int ghostWidth;
+        int ghostHeight;
+
+        Vector2 origin;
+
+        public GhostShip(Game1 game, ContentManager content)
         {
-            location = new Vector2(100, 100);
-            rotation = new Vector2(0, 0);
+            LoadContent(content);
+            screenHeight = game.graphics.PreferredBackBufferHeight;
+            screenWidth = game.graphics.PreferredBackBufferWidth;
+
+            ghostWidth = texture.Width;
+            ghostHeight = texture.Height;
+
+            Random random = new Random();
+
+            X = random.Next(ghostWidth, screenWidth);
+            Y = random.Next(ghostHeight, screenHeight);
+
+            origin = new Vector2(ghostWidth / 2, ghostHeight / 2);
+
+            hitBox = new CircleHitBox(ghostWidth / 2, X, Y);
+            Console.WriteLine(hitBox.X);
+            Console.WriteLine(hitBox.Y);
+            Console.WriteLine(hitBox.radius);
+
         }
         public void Update()
         {
 
+            hitBox.X = X;
+            hitBox.Y = Y;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, new Rectangle(500, 200, 200, 150), Color.Black);
+            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 262, 175), null, Color.Black, (float)Math.PI, origin, SpriteEffects.None, 0);
         }
 
         public void LoadContent(ContentManager content)

@@ -13,30 +13,94 @@ namespace MonoGameWindowsStarter
     class Player
     {
         Texture2D texture;
-        TriangleHitBox hitBox;
-        Vector2 location;
-        float rotation;
-        Vector2 origin = new Vector2(0, 0);
-        Vector2 scale;
+        public CircleHitBox hitBox;
+        double rotation;
+        Vector2 origin;
+
+        double X;
+        double Y;
+
+        int screenWidth;
+        int screenHeight;
+
+        int playerWidth;
+        int playerHeight;
+
+        double speed;
 
 
-        public Player (Game1 game)
+        public Player (Game1 game, ContentManager content)
         {
-            location = new Vector2(100, 100);
+            screenHeight = game.graphics.PreferredBackBufferHeight;
+            screenWidth = game.graphics.PreferredBackBufferWidth;
+
+            LoadContent(content);
+
+            X = screenWidth / 2;
+            Y = screenHeight / 2;
             rotation = 0;
-            scale = new Vector2(10, 20);
+
+            playerWidth = texture.Width;
+            playerHeight = texture.Height;
+
+            origin = new Vector2(playerWidth / 2, playerHeight / 2);
+
+            speed = 5;
+
+            hitBox = new CircleHitBox(playerWidth / 2, X, Y);
+
+            Console.WriteLine(hitBox.X);
+            Console.WriteLine(hitBox.Y);
+            Console.WriteLine(hitBox.radius);
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, );
+            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 262, 175), null, Color.White, ConvertToRadians(rotation + 180), origin, SpriteEffects.None, 0);
+        }
+
+        private float ConvertToRadians(double degrees)
+        {
+            return (float)(degrees * Math.PI / 180);
+        }
+
+        private double ConvertToDegrees(double degrees)
+        {
+            return -1;
         }
 
         public void Update(GhostShip ghost)
         {
-            if(CollidesWith(ghost.hitBox, this.hitBox))
+
+            var keyboardState = Keyboard.GetState();
+
+            if(keyboardState.IsKeyDown(Keys.Left))
             {
-                Console.WriteLine("Hit");
+                rotation-= speed;
+                Console.WriteLine(rotation);
+            } 
+            if(keyboardState.IsKeyDown(Keys.Right))
+            {
+                rotation+= speed;
+                Console.WriteLine(rotation);
             }
+            if(keyboardState.IsKeyDown(Keys.W))
+            {
+                X += Math.Sin(ConvertToRadians(rotation)) * speed;
+                Y -= Math.Cos(ConvertToRadians(rotation)) * speed;
+            }
+            if (keyboardState.IsKeyDown(Keys.S))
+            {
+                X -= Math.Sin(ConvertToRadians(rotation)) * speed;
+                Y += Math.Cos(ConvertToRadians(rotation)) * speed;
+            }
+            hitBox.X = X;
+            hitBox.Y = Y;
+
+            if(hitBox.CollidesWith(ghost.hitBox))
+            {
+                Console.WriteLine("Hittttt!!!!");
+            }
+
         }
 
         public void LoadContent(ContentManager content)
@@ -44,39 +108,7 @@ namespace MonoGameWindowsStarter
             texture = content.Load<Texture2D>("playerspaceship");
         }
 
-        private bool CollidesWith(TriangleHitBox t1, TriangleHitBox t2)
-        {
-
-            float t2area = getAreaOfTraingle(t2.x1, t2.x2, t2.x3, t2.y1, t2.y2, t2.y3);
-            int tempX = t1.x1;
-            int tempY = t1.y1;
-            for(int i = 1; i <= 3; i++)
-            {
-                float a1 = getAreaOfTraingle(tempX, t2.x1, t2.x3, tempY, t2.y1, t2.y3);
-                float a2 = getAreaOfTraingle(tempX, t2.x2, t2.x3, tempY, t2.y2, t2.y3);
-                float a3 = getAreaOfTraingle(tempX, t2.x1, t2.x2, tempY, t2.y1, t2.y2);
-                if( (a1 + a2 + a3) - t2area < 0.0000001 && t2area - (a1 + a2 + a3) < 0.0000001)
-                {
-                    return true;
-                }
-                if (i == 1)
-                {
-                    tempX = t1.x2;
-                    tempY = t1.y2;
-                } else
-                {
-                    tempX = t1.x3;
-                    tempY = t1.y3;
-                }
-            }
-
-            return false;
-        }
-
-        private float getAreaOfTraingle(int x1, int x2, int x3, int y1, int y2, int y3)
-        {
-            return Math.Abs((x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)) / 2);
-        } 
+       
 
 
     }

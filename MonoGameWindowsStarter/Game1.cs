@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace MonoGameWindowsStarter
 {
@@ -9,7 +10,7 @@ namespace MonoGameWindowsStarter
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
+        public GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
         GhostShip ghostShip;
@@ -18,8 +19,8 @@ namespace MonoGameWindowsStarter
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            player = new Player(this);
-            ghostShip = new GhostShip();
+            
+            
         }
 
         /// <summary>
@@ -30,7 +31,10 @@ namespace MonoGameWindowsStarter
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
+            graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -41,11 +45,13 @@ namespace MonoGameWindowsStarter
         /// </summary>
         protected override void LoadContent()
         {
+            player = new Player(this, Content);
+            ghostShip = new GhostShip(this, Content);
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            player.LoadContent(Content);
-            ghostShip.LoadContent(Content);
-            // TODO: use this.Content to load your game content here
+            //player.LoadContent(Content);
+            ///ghostShip.LoadContent(Content);
+            
         }
 
         /// <summary>
@@ -67,7 +73,9 @@ namespace MonoGameWindowsStarter
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            player.Update(ghostShip);
+            ghostShip.Update();
+
 
             base.Update(gameTime);
         }
@@ -82,11 +90,48 @@ namespace MonoGameWindowsStarter
             spriteBatch.Begin();
 
             player.Draw(spriteBatch);
-            //ghostShip.Draw(spriteBatch);
+            ghostShip.Draw(spriteBatch);
 
             spriteBatch.End();
             
             base.Draw(gameTime);
         }
+
+        private bool CollidesWith(TriangleHitBox t1, TriangleHitBox t2)
+        {
+
+            double t2area = getAreaOfTraingle(t2.x1, t2.x2, t2.x3, t2.y1, t2.y2, t2.y3);
+            double tempX = t1.x1;
+            double tempY = t1.y1;
+            for (int i = 1; i <= 3; i++)
+            {
+                double a1 = getAreaOfTraingle(tempX, t2.x1, t2.x3, tempY, t2.y1, t2.y3);
+                double a2 = getAreaOfTraingle(tempX, t2.x2, t2.x3, tempY, t2.y2, t2.y3);
+                double a3 = getAreaOfTraingle(tempX, t2.x1, t2.x2, tempY, t2.y1, t2.y2);
+                if ((a1 + a2 + a3) - t2area < 0.0000001 && t2area - (a1 + a2 + a3) < 0.0000001)
+                {
+                    return true;
+                }
+                if (i == 1)
+                {
+                    tempX = t1.x2;
+                    tempY = t1.y2;
+                }
+                else
+                {
+                    tempX = t1.x3;
+                    tempY = t1.y3;
+                }
+            }
+
+            return false;
+        }
+
+        private double getAreaOfTraingle(double x1, double x2, double x3, double y1, double y2, double y3)
+        {
+            return Math.Abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2);
+        }
+
+
     }
 }
