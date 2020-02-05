@@ -12,12 +12,14 @@ namespace MonoGameWindowsStarter
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
+        GhostShip ghostShip;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             player = new Player(this);
+            ghostShip = new GhostShip();
         }
 
         /// <summary>
@@ -42,6 +44,7 @@ namespace MonoGameWindowsStarter
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             player.LoadContent(Content);
+            ghostShip.LoadContent(Content);
             // TODO: use this.Content to load your game content here
         }
 
@@ -77,8 +80,9 @@ namespace MonoGameWindowsStarter
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
-
+            player.Draw(spriteBatch);
+            ghostShip.Draw(spriteBatch);
+            
             base.Draw(gameTime);
         }
     }
