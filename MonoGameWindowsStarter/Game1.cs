@@ -79,9 +79,12 @@ namespace MonoGameWindowsStarter
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
 
             player.Draw(spriteBatch);
-            ghostShip.Draw(spriteBatch);
+            //ghostShip.Draw(spriteBatch);
+
+            spriteBatch.End();
             
             base.Draw(gameTime);
         }

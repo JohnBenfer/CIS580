@@ -15,16 +15,20 @@ namespace MonoGameWindowsStarter
         Texture2D texture;
         TriangleHitBox hitBox;
         Vector2 location;
-        Vector2 rotation;
+        float rotation;
+        Vector2 origin = new Vector2(0, 0);
+        Vector2 scale;
 
 
         public Player (Game1 game)
         {
-
+            location = new Vector2(100, 100);
+            rotation = 0;
+            scale = new Vector2(10, 20);
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, location, null, null, rotation);
+            spriteBatch.Draw(texture, );
         }
 
         public void Update(GhostShip ghost)

@@ -19,6 +19,7 @@ namespace MonoGameWindowsStarter
         public GhostShip()
         {
             location = new Vector2(100, 100);
+            rotation = new Vector2(0, 0);
         }
         public void Update()
         {
@@ -27,7 +28,7 @@ namespace MonoGameWindowsStarter
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, location, null, null, rotation);
+            spriteBatch.Draw(texture, new Rectangle(500, 200, 200, 150), Color.Black);
         }
 
         public void LoadContent(ContentManager content)
