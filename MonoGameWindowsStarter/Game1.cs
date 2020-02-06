@@ -17,7 +17,7 @@ namespace MonoGameWindowsStarter
         int asteroidCount;
         int level;
         List<Asteroid> asteroids;
-        int maxAsteroids = 5;
+        int maxAsteroids = 8;
         Texture2D background;
 
         public Game1()
