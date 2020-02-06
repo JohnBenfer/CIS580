@@ -17,7 +17,8 @@ namespace MonoGameWindowsStarter
         int asteroidCount;
         int level;
         List<Asteroid> asteroids;
-        int maxAsteroids = 8;
+        int maxAsteroids = 5;
+        Texture2D background;
 
         public Game1()
         {
@@ -36,6 +37,8 @@ namespace MonoGameWindowsStarter
         protected override void Initialize()
         {
 
+            //graphics.PreferredBackBufferWidth = 3840;
+            //graphics.PreferredBackBufferHeight = 2050;
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
@@ -48,12 +51,15 @@ namespace MonoGameWindowsStarter
             base.Initialize();
         }
 
+        
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
         /// </summary>
         protected override void LoadContent()
         {
+            background = Content.Load<Texture2D>("Space");
             player = new Player(this, Content);
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -83,15 +89,31 @@ namespace MonoGameWindowsStarter
 
             player.Update();
             List<Asteroid> temp = new List<Asteroid>();
+            List<Bullet> tempBullets = new List<Bullet>();
             foreach(Asteroid a in asteroids)
             {
                 a.Update();
                 if(a.hitBox.CollidesWith(player.hitBox))
                 {
                     temp.Add(a);
-                    level++;
+                    
                     Restart();
                 }
+
+                foreach (Bullet b in player.bullets)
+                {
+                    if(a.hitBox.CollidesWith(b.hitBox))
+                    {
+                        temp.Add(a);
+                        tempBullets.Add(b);
+                        level++;
+                    }
+                }
+                foreach (Bullet b in tempBullets) 
+                {
+                    player.bullets.Remove(b);
+                }
+
                 if(a.Killed)
                 {
                     temp.Add(a);
@@ -121,6 +143,8 @@ namespace MonoGameWindowsStarter
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
+            Rectangle r = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
+            spriteBatch.Draw(background, r, Color.White);
 
             player.Draw(spriteBatch);
             foreach(Asteroid a in asteroids)

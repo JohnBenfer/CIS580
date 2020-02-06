@@ -28,10 +28,11 @@ namespace MonoGameWindowsStarter
 
         double speed;
 
-        List<Bullet> bullets;
+        public List<Bullet> bullets;
         ContentManager content;
         Game1 game;
 
+        bool shootLock = false;
 
         public Player (Game1 game, ContentManager content)
         {
@@ -53,7 +54,7 @@ namespace MonoGameWindowsStarter
 
             speed = 8;
 
-            hitBox = new CircleHitBox(70, X, Y);
+            hitBox = new CircleHitBox(25, X, Y);
 
             Console.WriteLine(hitBox.X);
             Console.WriteLine(hitBox.Y);
@@ -61,7 +62,11 @@ namespace MonoGameWindowsStarter
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 262, 175), null, Color.White, ConvertToRadians(rotation + 180), origin, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 200, 133), null, Color.White, ConvertToRadians(rotation + 180), origin, SpriteEffects.None, 0);
+            foreach(Bullet b in bullets)
+            {
+                b.Draw(spriteBatch);
+            }
         }
 
         private float ConvertToRadians(double degrees)
@@ -81,20 +86,20 @@ namespace MonoGameWindowsStarter
 
             if(keyboardState.IsKeyDown(Keys.Left))
             {
-                rotation-= speed;
+                rotation-= speed * 0.7;
                 
             } 
             if(keyboardState.IsKeyDown(Keys.Right))
             {
-                rotation+= speed;
+                rotation+= speed * 0.7;
 
             }
-            if(keyboardState.IsKeyDown(Keys.W))
+            if(keyboardState.IsKeyDown(Keys.Up))
             {
                 X += Math.Sin(ConvertToRadians(rotation)) * speed;
                 Y -= Math.Cos(ConvertToRadians(rotation)) * speed;
             }
-            if (keyboardState.IsKeyDown(Keys.S))
+            if (keyboardState.IsKeyDown(Keys.Down))
             {
                 X -= Math.Sin(ConvertToRadians(rotation)) * speed;
                 Y += Math.Cos(ConvertToRadians(rotation)) * speed;
@@ -102,7 +107,15 @@ namespace MonoGameWindowsStarter
 
             if(keyboardState.IsKeyDown(Keys.Space))
             {
-                Shoot();
+                if(!shootLock)
+                {
+                    Shoot();
+                    shootLock = true;
+                }
+                
+            } else
+            {
+                shootLock = false;
             }
 
             if(X < 0)
@@ -125,7 +138,19 @@ namespace MonoGameWindowsStarter
             hitBox.X = X;
             hitBox.Y = Y;
 
-            
+            List<Bullet> temp = new List<Bullet>();
+            foreach(Bullet b in bullets)
+            {
+                b.Update();
+                if(b.Killed)
+                {
+                    temp.Add(b);
+                }
+            }
+            foreach (Bullet b in temp)
+            {
+                bullets.Remove(b);
+            }
 
         }
 

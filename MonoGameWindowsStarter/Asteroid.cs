@@ -74,7 +74,7 @@ namespace MonoGameWindowsStarter
 
             origin = new Vector2(ghostWidth / 2, ghostHeight / 2);
 
-            hitBox = new CircleHitBox(45, X, Y);
+            hitBox = new CircleHitBox(60, X, Y);
             speed = 50;
             double slope = (playerY - Y) / (playerX - X);
             XDelta = Math.Sqrt(speed / ((slope * slope) + 1));
@@ -96,7 +96,7 @@ namespace MonoGameWindowsStarter
 
         public void LoadContent(ContentManager content)
         {
-            texture = content.Load<Texture2D>("Asteroid1");
+            texture = content.Load<Texture2D>("Asteroid2");
         }
 
         public void Update()
@@ -121,7 +121,7 @@ namespace MonoGameWindowsStarter
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 100, 100), null, color, (float)rotation, origin, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 120, 120), null, color, (float)rotation, origin, SpriteEffects.None, 0);
         }
     }
 }
