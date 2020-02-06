@@ -22,7 +22,7 @@ namespace MonoGameWindowsStarter
         public bool CollidesWith(CircleHitBox c2) 
         {
             double distance = Math.Sqrt((X - c2.X) * (X - c2.X) + (Y - c2.Y) * (Y - c2.Y));
-            if(radius + c2.radius < distance)
+            if(radius + c2.radius > distance)
             {
                 return true;
             }

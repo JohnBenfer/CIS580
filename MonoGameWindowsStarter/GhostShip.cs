@@ -13,8 +13,6 @@ namespace MonoGameWindowsStarter
     {
         public CircleHitBox hitBox;
         Texture2D  texture;
-        Vector2 location;
-        Vector2 rotation;
 
         double X;
         double Y;
@@ -24,6 +22,8 @@ namespace MonoGameWindowsStarter
 
         int ghostWidth;
         int ghostHeight;
+
+        public Color color;
 
         Vector2 origin;
 
@@ -41,9 +41,11 @@ namespace MonoGameWindowsStarter
             X = random.Next(ghostWidth, screenWidth);
             Y = random.Next(ghostHeight, screenHeight);
 
+            color = Color.Black;
+
             origin = new Vector2(ghostWidth / 2, ghostHeight / 2);
 
-            hitBox = new CircleHitBox(ghostWidth / 2, X, Y);
+            hitBox = new CircleHitBox(70, X, Y);
             Console.WriteLine(hitBox.X);
             Console.WriteLine(hitBox.Y);
             Console.WriteLine(hitBox.radius);
@@ -58,12 +60,17 @@ namespace MonoGameWindowsStarter
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 262, 175), null, Color.Black, (float)Math.PI, origin, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 262, 175), null, color, (float)Math.PI, origin, SpriteEffects.None, 0);
         }
 
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("ghostship");
+        }
+
+        public void Kill()
+        {
+
         }
 
     }

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace MonoGameWindowsStarter
 {
@@ -13,7 +14,10 @@ namespace MonoGameWindowsStarter
         public GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
-        GhostShip ghostShip;
+        int asteroidCount;
+        int level;
+        List<Asteroid> asteroids;
+        int maxAsteroids = 8;
 
         public Game1()
         {
@@ -36,6 +40,11 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
 
+            level = 1;
+            asteroidCount = 0;
+            asteroids = new List<Asteroid>();
+
+
             base.Initialize();
         }
 
@@ -46,7 +55,6 @@ namespace MonoGameWindowsStarter
         protected override void LoadContent()
         {
             player = new Player(this, Content);
-            ghostShip = new GhostShip(this, Content);
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             //player.LoadContent(Content);
@@ -73,9 +81,34 @@ namespace MonoGameWindowsStarter
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            player.Update(ghostShip);
-            ghostShip.Update();
+            player.Update();
+            List<Asteroid> temp = new List<Asteroid>();
+            foreach(Asteroid a in asteroids)
+            {
+                a.Update();
+                if(a.hitBox.CollidesWith(player.hitBox))
+                {
+                    temp.Add(a);
+                    level++;
+                    Restart();
+                }
+                if(a.Killed)
+                {
+                    temp.Add(a);
 
+                }
+            }
+            foreach(Asteroid a in temp)
+            {
+                asteroids.Remove(a);
+                asteroidCount--;
+            }
+
+            if(asteroidCount < level && asteroidCount < maxAsteroids)
+            {
+                asteroids.Add(new Asteroid(this, Content, player.X, player.Y));
+                asteroidCount++;
+            }
 
             base.Update(gameTime);
         }
@@ -90,7 +123,10 @@ namespace MonoGameWindowsStarter
             spriteBatch.Begin();
 
             player.Draw(spriteBatch);
-            ghostShip.Draw(spriteBatch);
+            foreach(Asteroid a in asteroids)
+            {
+                a.Draw(spriteBatch);
+            }
 
             spriteBatch.End();
             
@@ -132,6 +168,12 @@ namespace MonoGameWindowsStarter
             return Math.Abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2);
         }
 
+
+        private void Restart()
+        {
+            Initialize();
+
+        }
 
     }
 }

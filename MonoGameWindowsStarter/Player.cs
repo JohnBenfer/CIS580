@@ -17,8 +17,8 @@ namespace MonoGameWindowsStarter
         double rotation;
         Vector2 origin;
 
-        double X;
-        double Y;
+        public double X;
+        public double Y;
 
         int screenWidth;
         int screenHeight;
@@ -28,13 +28,19 @@ namespace MonoGameWindowsStarter
 
         double speed;
 
+        List<Bullet> bullets;
+        ContentManager content;
+        Game1 game;
+
 
         public Player (Game1 game, ContentManager content)
         {
             screenHeight = game.graphics.PreferredBackBufferHeight;
             screenWidth = game.graphics.PreferredBackBufferWidth;
-
+            this.content = content;
+            bullets = new List<Bullet>();
             LoadContent(content);
+            this.game = game;
 
             X = screenWidth / 2;
             Y = screenHeight / 2;
@@ -45,9 +51,9 @@ namespace MonoGameWindowsStarter
 
             origin = new Vector2(playerWidth / 2, playerHeight / 2);
 
-            speed = 5;
+            speed = 8;
 
-            hitBox = new CircleHitBox(playerWidth / 2, X, Y);
+            hitBox = new CircleHitBox(70, X, Y);
 
             Console.WriteLine(hitBox.X);
             Console.WriteLine(hitBox.Y);
@@ -68,7 +74,7 @@ namespace MonoGameWindowsStarter
             return -1;
         }
 
-        public void Update(GhostShip ghost)
+        public void Update()
         {
 
             var keyboardState = Keyboard.GetState();
@@ -76,12 +82,12 @@ namespace MonoGameWindowsStarter
             if(keyboardState.IsKeyDown(Keys.Left))
             {
                 rotation-= speed;
-                Console.WriteLine(rotation);
+                
             } 
             if(keyboardState.IsKeyDown(Keys.Right))
             {
                 rotation+= speed;
-                Console.WriteLine(rotation);
+
             }
             if(keyboardState.IsKeyDown(Keys.W))
             {
@@ -93,14 +99,39 @@ namespace MonoGameWindowsStarter
                 X -= Math.Sin(ConvertToRadians(rotation)) * speed;
                 Y += Math.Cos(ConvertToRadians(rotation)) * speed;
             }
+
+            if(keyboardState.IsKeyDown(Keys.Space))
+            {
+                Shoot();
+            }
+
+            if(X < 0)
+            {
+                X = 0;
+            }
+            if(X > screenWidth)
+            {
+                X = screenWidth;
+            }
+            if(Y < 0)
+            {
+                Y = 0;
+            }
+            if(Y > screenHeight)
+            {
+                Y = screenHeight;
+            }
+
             hitBox.X = X;
             hitBox.Y = Y;
 
-            if(hitBox.CollidesWith(ghost.hitBox))
-            {
-                Console.WriteLine("Hittttt!!!!");
-            }
+            
 
+        }
+
+        private void Shoot()
+        {
+            bullets.Add(new Bullet(game, content, X, Y, rotation));
         }
 
         public void LoadContent(ContentManager content)
