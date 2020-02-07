@@ -19,6 +19,7 @@ namespace MonoGameWindowsStarter
         List<Asteroid> asteroids;
         int maxAsteroids = 8;
         Texture2D background;
+        Texture2D SpaceBackground;
 
         public Game1()
         {
@@ -59,7 +60,9 @@ namespace MonoGameWindowsStarter
         /// </summary>
         protected override void LoadContent()
         {
+            
             background = Content.Load<Texture2D>("Space");
+            //SpaceBackground = Content.Load<Texture2D>("SpaceSpriteSheet");
             player = new Player(this, Content);
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -145,6 +148,13 @@ namespace MonoGameWindowsStarter
             spriteBatch.Begin();
             Rectangle r = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             spriteBatch.Draw(background, r, Color.White);
+
+            /*spriteBatch.Draw(
+                SpaceBackground, 
+                new Vector2(0,0), 
+                new Rectangle(new Point(0,0), new Point(SpaceBackground.Width/3, SpaceBackground.Height)), 
+                Color.White);
+*/
 
             player.Draw(spriteBatch);
             foreach(Asteroid a in asteroids)
