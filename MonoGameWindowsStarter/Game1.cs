@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 
@@ -24,6 +25,8 @@ namespace MonoGameWindowsStarter
         SoundEffect gameOver;
         public float soundEffectVolume;
         SoundEffect asteroidDestroyed;
+        Song backgroundMusic;
+        float musicVolume;
         
 
         public Game1()
@@ -49,12 +52,15 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
             soundEffectVolume = 0.15f;
+            musicVolume = 0.2f;
             level = 1;
             asteroidCount = 0;
             asteroids = new List<Asteroid>();
 
 
             base.Initialize();
+            MediaPlayer.Play(backgroundMusic);
+            MediaPlayer.Volume = musicVolume;
         }
 
         
@@ -74,6 +80,7 @@ namespace MonoGameWindowsStarter
 
             gameOver = Content.Load<SoundEffect>("Player hit");
             asteroidDestroyed = Content.Load<SoundEffect>("Asteroid Destroyed");
+            backgroundMusic = Content.Load<Song>("Background Song");
             
         }
 
