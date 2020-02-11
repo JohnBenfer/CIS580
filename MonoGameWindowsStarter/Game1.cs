@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -20,6 +21,10 @@ namespace MonoGameWindowsStarter
         int maxAsteroids = 8;
         Texture2D background;
         Texture2D SpaceBackground;
+        SoundEffect gameOver;
+        public float soundEffectVolume;
+        SoundEffect asteroidDestroyed;
+        
 
         public Game1()
         {
@@ -43,7 +48,7 @@ namespace MonoGameWindowsStarter
             graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferredBackBufferHeight = 1080;
             graphics.ApplyChanges();
-
+            soundEffectVolume = 0.15f;
             level = 1;
             asteroidCount = 0;
             asteroids = new List<Asteroid>();
@@ -66,8 +71,9 @@ namespace MonoGameWindowsStarter
             player = new Player(this, Content);
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            //player.LoadContent(Content);
-            ///ghostShip.LoadContent(Content);
+
+            gameOver = Content.Load<SoundEffect>("Player hit");
+            asteroidDestroyed = Content.Load<SoundEffect>("Asteroid Destroyed");
             
         }
 
@@ -93,22 +99,25 @@ namespace MonoGameWindowsStarter
             player.Update();
             List<Asteroid> temp = new List<Asteroid>();
             List<Bullet> tempBullets = new List<Bullet>();
-            foreach(Asteroid a in asteroids)
+            foreach(Asteroid asteroid in asteroids)
             {
-                a.Update();
-                if(a.hitBox.CollidesWith(player.hitBox))
+                asteroid.Update();
+                if(asteroid.hitBox.CollidesWith(player.hitBox))
                 {
-                    temp.Add(a);
-                    
+                    temp.Add(asteroid);
+                    // play game over noise
+                    gameOver.Play(soundEffectVolume, 0, 0);
                     Restart();
                 }
 
                 foreach (Bullet b in player.bullets)
                 {
-                    if(a.hitBox.CollidesWith(b.hitBox))
+                    if(asteroid.hitBox.CollidesWith(b.hitBox))
                     {
-                        temp.Add(a);
+                        temp.Add(asteroid);
                         tempBullets.Add(b);
+                        // play asteroid destroyed noise
+                        asteroidDestroyed.Play(soundEffectVolume, 0, 0);
                         level++;
                     }
                 }
@@ -117,9 +126,9 @@ namespace MonoGameWindowsStarter
                     player.bullets.Remove(b);
                 }
 
-                if(a.Killed)
+                if(asteroid.Killed)
                 {
-                    temp.Add(a);
+                    temp.Add(asteroid);
 
                 }
             }

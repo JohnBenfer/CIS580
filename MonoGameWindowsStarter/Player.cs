@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Audio;
 
 namespace MonoGameWindowsStarter
 {
     class Player
     {
         Texture2D texture;
+        SoundEffect shooting;
+        float soundEffectVolume;
         public CircleHitBox hitBox;
         double rotation;
         Vector2 origin;
@@ -42,6 +45,7 @@ namespace MonoGameWindowsStarter
             bullets = new List<Bullet>();
             LoadContent(content);
             this.game = game;
+            this.soundEffectVolume = game.soundEffectVolume;
 
             X = screenWidth / 2;
             Y = screenHeight / 2;
@@ -157,11 +161,13 @@ namespace MonoGameWindowsStarter
         private void Shoot()
         {
             bullets.Add(new Bullet(game, content, X, Y, rotation));
+            shooting.Play(soundEffectVolume, 0, 0);
         }
 
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("playerspaceship");
+            shooting = content.Load<SoundEffect>("Gun shot");
         }
 
        

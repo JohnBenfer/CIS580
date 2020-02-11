@@ -49,6 +49,18 @@
 /processorParam:TextureFormat=Color
 /build:AsteroidSpriteSheet.png
 
+#begin Asterpoid Destroyed.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Asterpoid Destroyed.wav;Asteroid Destroyed.wav
+
+#begin Background Song.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Background Song.mp3
+
 #begin Bullet.PNG
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -72,6 +84,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:ghostship.png
+
+#begin Gun shot.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Gun shot.wav
+
+#begin Player hit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Player hit.wav
 
 #begin playerspaceship.png
 /importer:TextureImporter
