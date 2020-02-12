@@ -30,6 +30,7 @@ namespace MonoGameWindowsStarter
         public int FRAME_RATE = 60;
         int score;
         SpriteFont scoreFont;
+        bool isGameOver = false;
         
         
 
@@ -108,73 +109,76 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            player.Update();
-            List<Asteroid> AsteroidsDestroyedByPlayer = new List<Asteroid>();
-            List<Asteroid> AsteroidsOffScreen = new List<Asteroid>();
-            List<Bullet> BulletsHitAsteroid = new List<Bullet>();
-            foreach(Asteroid asteroid in asteroids)
+            if (!isGameOver)
             {
-                asteroid.Update(gameTime);
-                if(asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding)
-                {
-                    
-                    //AsteroidsDestroyedByPlayer.Add(asteroid);
-                    // play game over noise
-                    gameOver.Play(soundEffectVolume, 0, 0);
-                    Restart();
-                }
+                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    Exit();
 
-                foreach (Bullet b in player.bullets)
+                player.Update();
+                List<Asteroid> AsteroidsDestroyedByPlayer = new List<Asteroid>();
+                List<Asteroid> AsteroidsOffScreen = new List<Asteroid>();
+                List<Bullet> BulletsHitAsteroid = new List<Bullet>();
+                foreach (Asteroid asteroid in asteroids)
                 {
-                    if(asteroid.hitBox.CollidesWith(b.hitBox))
+                    asteroid.Update(gameTime);
+                    if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding)
                     {
-                        AsteroidsDestroyedByPlayer.Add(asteroid);
-                        BulletsHitAsteroid.Add(b);
-                        asteroid.Exploding = true;
-                        // play asteroid destroyed noise
-                        asteroidDestroyed.Play(soundEffectVolume, 0, 0);
-                        level++;
-                        score+=10;
+
+                        //AsteroidsDestroyedByPlayer.Add(asteroid);
+                        // play game over noise
+                        gameOver.Play(soundEffectVolume, 0, 0);
+                        GameOver();
+                    }
+
+                    foreach (Bullet b in player.bullets)
+                    {
+                        if (asteroid.hitBox.CollidesWith(b.hitBox))
+                        {
+                            AsteroidsDestroyedByPlayer.Add(asteroid);
+                            BulletsHitAsteroid.Add(b);
+                            asteroid.Exploding = true;
+                            // play asteroid destroyed noise
+                            asteroidDestroyed.Play(soundEffectVolume, 0, 0);
+                            level++;
+                            score += 10;
+                        }
+                    }
+                    foreach (Bullet b in BulletsHitAsteroid)
+                    {
+                        player.bullets.Remove(b);
+                    }
+
+                    if (asteroid.OffScreen)
+                    {
+                        AsteroidsOffScreen.Add(asteroid);
+
                     }
                 }
-                foreach (Bullet b in BulletsHitAsteroid) 
+                foreach (Asteroid a in AsteroidsDestroyedByPlayer)
                 {
-                    player.bullets.Remove(b);
+                    if (!a.Exploding)
+                    {
+                        Console.WriteLine(asteroids.Count);
+                        asteroids.Remove(a);
+
+                    }
                 }
 
-                if(asteroid.OffScreen)
+                foreach (Asteroid asteroid in AsteroidsOffScreen)
                 {
-                    AsteroidsOffScreen.Add(asteroid);
+                    asteroids.Remove(asteroid);
 
                 }
-            }
-            foreach(Asteroid a in AsteroidsDestroyedByPlayer)
-            {
-                if(!a.Exploding)
+
+
+                if (asteroids.Count < level && asteroids.Count < maxAsteroids)
                 {
-                    Console.WriteLine(asteroids.Count);
-                    asteroids.Remove(a);
-                     
+                    asteroids.Add(new Asteroid(this, Content, player.X, player.Y));
+
                 }
+
+                base.Update(gameTime);
             }
-
-            foreach(Asteroid asteroid in AsteroidsOffScreen)
-            {
-                asteroids.Remove(asteroid);
-                
-            }
-
-
-            if(asteroids.Count < level && asteroids.Count < maxAsteroids)
-            {
-                asteroids.Add(new Asteroid(this, Content, player.X, player.Y));
-                
-            }
-
-            base.Update(gameTime);
         }
 
         /// <summary>
@@ -243,8 +247,20 @@ namespace MonoGameWindowsStarter
         }
 
 
-        private void Restart()
+        private void GameOver()
         {
+            asteroids = null;
+            player = null;
+            spriteBatch.Begin();
+            spriteBatch.DrawString(scoreFont, "Press R to restart", new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, graphics.PreferredBackBufferHeight / 2), Color.White);
+            spriteBatch.End();
+
+            while(!Keyboard.GetState().IsKeyDown(Keys.R))
+            {
+
+            }
+
+            
             Initialize();
 
         }
