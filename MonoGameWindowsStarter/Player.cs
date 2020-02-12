@@ -60,9 +60,6 @@ namespace MonoGameWindowsStarter
 
             hitBox = new CircleHitBox(25, X, Y);
 
-            Console.WriteLine(hitBox.X);
-            Console.WriteLine(hitBox.Y);
-            Console.WriteLine(hitBox.radius);
         }
         public void Draw(SpriteBatch spriteBatch)
         {

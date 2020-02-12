@@ -27,6 +27,8 @@ namespace MonoGameWindowsStarter
         SoundEffect asteroidDestroyed;
         Song backgroundMusic;
         float musicVolume;
+        public int FRAME_RATE = 60;
+        
         
 
         public Game1()
@@ -73,7 +75,7 @@ namespace MonoGameWindowsStarter
         {
             
             background = Content.Load<Texture2D>("Space");
-            //SpaceBackground = Content.Load<Texture2D>("SpaceSpriteSheet");
+            //SpaceBackground = Content.Load<Texture2D>("AsteroidSpriteSheet");
             player = new Player(this, Content);
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -104,14 +106,16 @@ namespace MonoGameWindowsStarter
                 Exit();
 
             player.Update();
-            List<Asteroid> temp = new List<Asteroid>();
-            List<Bullet> tempBullets = new List<Bullet>();
+            List<Asteroid> AsteroidsDestroyedByPlayer = new List<Asteroid>();
+            List<Asteroid> AsteroidsOffScreen = new List<Asteroid>();
+            List<Bullet> BulletsHitAsteroid = new List<Bullet>();
             foreach(Asteroid asteroid in asteroids)
             {
-                asteroid.Update();
-                if(asteroid.hitBox.CollidesWith(player.hitBox))
+                asteroid.Update(gameTime);
+                if(asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding)
                 {
-                    temp.Add(asteroid);
+                    
+                    //AsteroidsDestroyedByPlayer.Add(asteroid);
                     // play game over noise
                     gameOver.Play(soundEffectVolume, 0, 0);
                     Restart();
@@ -121,34 +125,46 @@ namespace MonoGameWindowsStarter
                 {
                     if(asteroid.hitBox.CollidesWith(b.hitBox))
                     {
-                        temp.Add(asteroid);
-                        tempBullets.Add(b);
+                        AsteroidsDestroyedByPlayer.Add(asteroid);
+                        BulletsHitAsteroid.Add(b);
+                        asteroid.Exploding = true;
                         // play asteroid destroyed noise
                         asteroidDestroyed.Play(soundEffectVolume, 0, 0);
                         level++;
                     }
                 }
-                foreach (Bullet b in tempBullets) 
+                foreach (Bullet b in BulletsHitAsteroid) 
                 {
                     player.bullets.Remove(b);
                 }
 
-                if(asteroid.Killed)
+                if(asteroid.OffScreen)
                 {
-                    temp.Add(asteroid);
+                    AsteroidsOffScreen.Add(asteroid);
 
                 }
             }
-            foreach(Asteroid a in temp)
+            foreach(Asteroid a in AsteroidsDestroyedByPlayer)
             {
-                asteroids.Remove(a);
-                asteroidCount--;
+                if(!a.Exploding)
+                {
+                    Console.WriteLine(asteroids.Count);
+                    asteroids.Remove(a);
+                     
+                }
             }
 
-            if(asteroidCount < level && asteroidCount < maxAsteroids)
+            foreach(Asteroid asteroid in AsteroidsOffScreen)
+            {
+                asteroids.Remove(asteroid);
+                
+            }
+
+
+            if(asteroids.Count < level && asteroids.Count < maxAsteroids)
             {
                 asteroids.Add(new Asteroid(this, Content, player.X, player.Y));
-                asteroidCount++;
+                
             }
 
             base.Update(gameTime);
@@ -165,12 +181,13 @@ namespace MonoGameWindowsStarter
             Rectangle r = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             spriteBatch.Draw(background, r, Color.White);
 
-            /*spriteBatch.Draw(
+            /*
+            spriteBatch.Draw(
                 SpaceBackground, 
                 new Vector2(0,0), 
                 new Rectangle(new Point(0,0), new Point(SpaceBackground.Width/3, SpaceBackground.Height)), 
                 Color.White);
-*/
+                */
 
             player.Draw(spriteBatch);
             foreach(Asteroid a in asteroids)

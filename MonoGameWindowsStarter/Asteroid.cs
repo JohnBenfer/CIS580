@@ -16,11 +16,22 @@ namespace MonoGameWindowsStarter
         double XDelta;
         double YDelta;
         Texture2D texture;
+        Texture2D Explosion1;
+        Texture2D Explosion2;
+        Texture2D Explosion3;
+        Texture2D Explosion4;
+        Texture2D currentTexture;
+        Texture2D[] sprites;
+
+        int frame;
+
+        TimeSpan timer;
 
         int screenWidth;
         int screenHeight;
 
-        public bool Killed = false;
+        public bool OffScreen = false;
+        public bool Exploding = false;
 
         int ghostWidth;
         int ghostHeight;
@@ -35,9 +46,16 @@ namespace MonoGameWindowsStarter
 
         double rotation;
 
+        Game1 game;
+
         public Asteroid(Game1 game, ContentManager content, double playerX, double playerY)
         {
             LoadContent(content);
+            
+            timer = new TimeSpan(0);
+
+           
+
             screenHeight = game.graphics.PreferredBackBufferHeight;
             screenWidth = game.graphics.PreferredBackBufferWidth;
 
@@ -88,8 +106,16 @@ namespace MonoGameWindowsStarter
             {
                 YDelta *= -1;
             }
-            
 
+            this.game = game;
+            sprites = new Texture2D[5];
+            sprites[0] = texture;
+            sprites[1] = Explosion1;
+            sprites[2] = Explosion2;
+            sprites[3] = Explosion3;
+            sprites[4] = Explosion4;
+
+            currentTexture = sprites[0];
         }
 
         
@@ -97,31 +123,69 @@ namespace MonoGameWindowsStarter
         public void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("Asteroid2");
+            Explosion1 = content.Load<Texture2D>("Explosion1");
+            Explosion2 = content.Load<Texture2D>("Explosion2");
+            Explosion3 = content.Load<Texture2D>("Explosion1");
+            Explosion4 = content.Load<Texture2D>("Explosion3");
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
-            rotation += 0.1;
-
-            X += XDelta;
-            Y += YDelta;
-            
-            
-
-            hitBox.X = X;
-            hitBox.Y = Y;
-
-            if(X > screenWidth + 130 || X < -130 || Y > screenHeight + 130 || Y < -130)
+            if (!Exploding)
             {
-                Killed = true;
+                rotation += 0.1;
+
+                X += XDelta;
+                Y += YDelta;
+
+
+
+                hitBox.X = X;
+                hitBox.Y = Y;
+
+                if (X > screenWidth + 130 || X < -130 || Y > screenHeight + 130 || Y < -130)
+                {
+                    OffScreen = true;
+                }
+
+                currentTexture = texture;
+
+            }
+            else
+            {
+
+                timer += gameTime.ElapsedGameTime;
+                Explode();
+            }
+            
+        }
+
+        private void Explode()
+        {
+            Console.WriteLine(frame);
+            
+                
+            if ((timer.TotalMilliseconds * 7) > (game.FRAME_RATE - 58))
+            {
+                    
+                frame++;
+                currentTexture = sprites[frame];
+                Console.WriteLine(frame);
+                timer -= new TimeSpan(0, 0, 0, 0, game.FRAME_RATE);
             }
 
-            
+
+
+            if (frame == 4)
+            {
+                //Exploding = false;
+                OffScreen = true;
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 120, 120), null, color, (float)rotation, origin, SpriteEffects.None, 0);
+            spriteBatch.Draw(currentTexture, new Rectangle((int)X, (int)Y, 120, 120), null, color, (float)rotation, origin, SpriteEffects.None, 0);
         }
     }
 }
