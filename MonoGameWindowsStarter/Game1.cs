@@ -13,13 +13,18 @@ namespace MonoGameWindowsStarter
     /// </summary>
     public class Game1 : Game
     {
+
+        // Window dimensions
+        int WINDOW_WIDTH = 3000;
+        int WINDOW_HEIGHT = 2000;
+
         public GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
         int asteroidCount;
         int level;
         List<Asteroid> asteroids;
-        int maxAsteroids = 8;
+        int maxAsteroids;
         Texture2D background;
         Texture2D SpaceBackground;
         SoundEffect gameOver;
@@ -30,9 +35,13 @@ namespace MonoGameWindowsStarter
         public int FRAME_RATE = 60;
         int score;
         SpriteFont scoreFont;
-        bool isGameOver = false;
+        bool isGameOver;
+        int width;
+        int height;
         
-        
+
+
+
 
         public Game1()
         {
@@ -55,22 +64,52 @@ namespace MonoGameWindowsStarter
             //graphics.PreferredBackBufferHeight = 2050;
             //graphics.PreferredBackBufferWidth = 1920;
             //graphics.PreferredBackBufferHeight = 1080;
-            graphics.PreferredBackBufferWidth = 3000;
-            graphics.PreferredBackBufferHeight = 2000;
-            graphics.ApplyChanges();
+            //graphics.PreferredBackBufferWidth = 3000;
+            //graphics.PreferredBackBufferHeight = 2000;
+            //graphics.ApplyChanges();
+
+            SetGraphics();
+
             soundEffectVolume = 0.15f;
             musicVolume = 0.2f;
             level = 1;
             asteroidCount = 0;
             asteroids = new List<Asteroid>();
-
+            width = graphics.PreferredBackBufferWidth;
+            height = graphics.PreferredBackBufferHeight;
+            SetMaxAsteroids();
 
             base.Initialize();
             MediaPlayer.Play(backgroundMusic);
             MediaPlayer.Volume = musicVolume;
             score = 0;
+            isGameOver = false;
         }
 
+        private void SetMaxAsteroids()
+        {
+            if(WINDOW_WIDTH <= 2000)
+            {
+                maxAsteroids = 8;
+
+            } else if (WINDOW_WIDTH <= 2500)
+            {
+                maxAsteroids = 10;
+            } else if (WINDOW_WIDTH <= 3000)
+            {
+                maxAsteroids = 12;
+            } else
+            {
+                maxAsteroids = 14;
+            }
+        }
+
+        private void SetGraphics()
+        {
+            graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
+            graphics.PreferredBackBufferHeight = WINDOW_HEIGHT;
+            graphics.ApplyChanges();
+        }
         
 
         /// <summary>
@@ -109,11 +148,11 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
             if (!isGameOver)
             {
-                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                    Exit();
-
+                
                 player.Update();
                 List<Asteroid> AsteroidsDestroyedByPlayer = new List<Asteroid>();
                 List<Asteroid> AsteroidsOffScreen = new List<Asteroid>();
@@ -121,22 +160,20 @@ namespace MonoGameWindowsStarter
                 foreach (Asteroid asteroid in asteroids)
                 {
                     asteroid.Update(gameTime);
-                    if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding)
+                    if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding) // game over
                     {
-
-                        //AsteroidsDestroyedByPlayer.Add(asteroid);
-                        // play game over noise
-                        gameOver.Play(soundEffectVolume, 0, 0);
                         GameOver();
+                        return;
                     }
 
                     foreach (Bullet b in player.bullets)
                     {
-                        if (asteroid.hitBox.CollidesWith(b.hitBox))
+                          if (asteroid.hitBox.CollidesWith(b.hitBox) && !asteroid.Hit)
                         {
                             AsteroidsDestroyedByPlayer.Add(asteroid);
                             BulletsHitAsteroid.Add(b);
                             asteroid.Exploding = true;
+                            asteroid.Hit = true;
                             // play asteroid destroyed noise
                             asteroidDestroyed.Play(soundEffectVolume, 0, 0);
                             level++;
@@ -154,22 +191,10 @@ namespace MonoGameWindowsStarter
 
                     }
                 }
-                foreach (Asteroid a in AsteroidsDestroyedByPlayer)
-                {
-                    if (!a.Exploding)
-                    {
-                        Console.WriteLine(asteroids.Count);
-                        asteroids.Remove(a);
 
-                    }
-                }
+                RemoveAsteroids(AsteroidsDestroyedByPlayer);
 
-                foreach (Asteroid asteroid in AsteroidsOffScreen)
-                {
-                    asteroids.Remove(asteroid);
-
-                }
-
+                RemoveAsteroids(AsteroidsOffScreen);
 
                 if (asteroids.Count < level && asteroids.Count < maxAsteroids)
                 {
@@ -178,6 +203,32 @@ namespace MonoGameWindowsStarter
                 }
 
                 base.Update(gameTime);
+            } else
+            {
+                // game is over here..
+
+                var k = Keyboard.GetState();
+                if(k.IsKeyDown(Keys.R))
+                {
+                    Initialize();
+                }
+
+
+            }
+
+
+
+        }
+
+
+        private void RemoveAsteroids(List<Asteroid> ToDeleteAsteroids)
+        {
+            foreach (Asteroid a in ToDeleteAsteroids)
+            {
+                if (!a.Exploding)
+                {
+                    asteroids.Remove(a);
+                }
             }
         }
 
@@ -187,82 +238,39 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             Rectangle r = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             spriteBatch.Draw(background, r, Color.White);
-            spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(graphics.PreferredBackBufferWidth / 2, 10), Color.White);
-            /*
-            spriteBatch.Draw(
-                SpaceBackground, 
-                new Vector2(0,0), 
-                new Rectangle(new Point(0,0), new Point(SpaceBackground.Width/3, SpaceBackground.Height)), 
-                Color.White);
-                */
+            
 
-            player.Draw(spriteBatch);
-            foreach(Asteroid a in asteroids)
+            if (!isGameOver)
             {
-                a.Draw(spriteBatch);
+                player.Draw(spriteBatch);
+                foreach (Asteroid a in asteroids)
+                {
+                    a.Draw(spriteBatch);
+                }
+                spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(graphics.PreferredBackBufferWidth / 2, 10), Color.White, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 1);
+            } else
+            {
+                spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2((graphics.PreferredBackBufferWidth / 2) - 200, (graphics.PreferredBackBufferHeight / 2) - 100), Color.White, 0f, new Vector2(0, 0), 2f, SpriteEffects.None, 1);
+                spriteBatch.DrawString(scoreFont, "Press R to play again or ESC to quit", new Vector2((graphics.PreferredBackBufferWidth / 2) - 530, (graphics.PreferredBackBufferHeight / 2)), Color.White, 0f, new Vector2(0, 0), 1.5f, SpriteEffects.None, 1);
             }
-
             spriteBatch.End();
             
             base.Draw(gameTime);
         }
 
-        private bool CollidesWith(TriangleHitBox t1, TriangleHitBox t2)
-        {
-
-            double t2area = getAreaOfTraingle(t2.x1, t2.x2, t2.x3, t2.y1, t2.y2, t2.y3);
-            double tempX = t1.x1;
-            double tempY = t1.y1;
-            for (int i = 1; i <= 3; i++)
-            {
-                double a1 = getAreaOfTraingle(tempX, t2.x1, t2.x3, tempY, t2.y1, t2.y3);
-                double a2 = getAreaOfTraingle(tempX, t2.x2, t2.x3, tempY, t2.y2, t2.y3);
-                double a3 = getAreaOfTraingle(tempX, t2.x1, t2.x2, tempY, t2.y1, t2.y2);
-                if ((a1 + a2 + a3) - t2area < 0.0000001 && t2area - (a1 + a2 + a3) < 0.0000001)
-                {
-                    return true;
-                }
-                if (i == 1)
-                {
-                    tempX = t1.x2;
-                    tempY = t1.y2;
-                }
-                else
-                {
-                    tempX = t1.x3;
-                    tempY = t1.y3;
-                }
-            }
-
-            return false;
-        }
-
-        private double getAreaOfTraingle(double x1, double x2, double x3, double y1, double y2, double y3)
-        {
-            return Math.Abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2);
-        }
-
 
         private void GameOver()
         {
+            gameOver.Play(soundEffectVolume, 0, 0);
             asteroids = null;
             player = null;
-            spriteBatch.Begin();
-            spriteBatch.DrawString(scoreFont, "Press R to restart", new Vector2((graphics.PreferredBackBufferWidth / 2) - 30, graphics.PreferredBackBufferHeight / 2), Color.White);
-            spriteBatch.End();
-
-            while(!Keyboard.GetState().IsKeyDown(Keys.R))
-            {
-
-            }
-
-            
-            Initialize();
-
+            MediaPlayer.Stop();
+            isGameOver = true;
         }
 
     }

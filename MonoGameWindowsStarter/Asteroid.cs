@@ -32,6 +32,7 @@ namespace MonoGameWindowsStarter
 
         public bool OffScreen = false;
         public bool Exploding = false;
+        public bool Hit;
 
         int ghostWidth;
         int ghostHeight;
@@ -46,18 +47,25 @@ namespace MonoGameWindowsStarter
 
         double rotation;
 
+        double scale;
+
         Game1 game;
 
         public Asteroid(Game1 game, ContentManager content, double playerX, double playerY)
         {
-            LoadContent(content);
-            
-            timer = new TimeSpan(0);
-
-           
-
             screenHeight = game.graphics.PreferredBackBufferHeight;
             screenWidth = game.graphics.PreferredBackBufferWidth;
+            LoadContent(content);
+            SetScale();
+            timer = new TimeSpan(0);
+
+            Hit = false;
+
+            speed = (int)(42*scale);
+
+            
+
+            
 
             ghostWidth = texture.Width;
             ghostHeight = texture.Height;
@@ -92,8 +100,8 @@ namespace MonoGameWindowsStarter
 
             origin = new Vector2(ghostWidth / 2, ghostHeight / 2);
 
-            hitBox = new CircleHitBox(60, X, Y);
-            speed = 50;
+            hitBox = new CircleHitBox((int)(52*scale), X, Y);
+            
             double slope = (playerY - Y) / (playerX - X);
             XDelta = Math.Sqrt(speed / ((slope * slope) + 1));
             YDelta = slope * XDelta;
@@ -119,6 +127,7 @@ namespace MonoGameWindowsStarter
         }
 
         
+
 
         public void LoadContent(ContentManager content)
         {
@@ -178,14 +187,29 @@ namespace MonoGameWindowsStarter
 
             if (frame == 4)
             {
-                //Exploding = false;
+                Exploding = false;
                 OffScreen = true;
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(currentTexture, new Rectangle((int)X, (int)Y, 120, 120), null, color, (float)rotation, origin, SpriteEffects.None, 0);
+            spriteBatch.Draw(currentTexture, new Rectangle((int)X, (int)Y, (int)(100*scale), (int)(scale*120)), null, color, (float)rotation, origin, SpriteEffects.None, 0);
         }
+
+        private void SetScale()
+        {
+           if(screenWidth < 2000)
+            {
+                scale = 1;
+            } else if(screenWidth <= 3000 )
+            {
+                scale = 1.2;
+            } else
+            {
+                scale = 1.4;
+            }
+        }
+
     }
 }
