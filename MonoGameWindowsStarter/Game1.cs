@@ -28,6 +28,8 @@ namespace MonoGameWindowsStarter
         Song backgroundMusic;
         float musicVolume;
         public int FRAME_RATE = 60;
+        int score;
+        SpriteFont scoreFont;
         
         
 
@@ -50,8 +52,10 @@ namespace MonoGameWindowsStarter
 
             //graphics.PreferredBackBufferWidth = 3840;
             //graphics.PreferredBackBufferHeight = 2050;
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
+            //graphics.PreferredBackBufferWidth = 1920;
+            //graphics.PreferredBackBufferHeight = 1080;
+            graphics.PreferredBackBufferWidth = 3000;
+            graphics.PreferredBackBufferHeight = 2000;
             graphics.ApplyChanges();
             soundEffectVolume = 0.15f;
             musicVolume = 0.2f;
@@ -63,6 +67,7 @@ namespace MonoGameWindowsStarter
             base.Initialize();
             MediaPlayer.Play(backgroundMusic);
             MediaPlayer.Volume = musicVolume;
+            score = 0;
         }
 
         
@@ -83,6 +88,7 @@ namespace MonoGameWindowsStarter
             gameOver = Content.Load<SoundEffect>("Player hit");
             asteroidDestroyed = Content.Load<SoundEffect>("Asteroid Destroyed");
             backgroundMusic = Content.Load<Song>("Background Song");
+            scoreFont = Content.Load<SpriteFont>("ScoreFont");
             
         }
 
@@ -131,6 +137,7 @@ namespace MonoGameWindowsStarter
                         // play asteroid destroyed noise
                         asteroidDestroyed.Play(soundEffectVolume, 0, 0);
                         level++;
+                        score+=10;
                     }
                 }
                 foreach (Bullet b in BulletsHitAsteroid) 
@@ -180,7 +187,7 @@ namespace MonoGameWindowsStarter
             spriteBatch.Begin();
             Rectangle r = new Rectangle(new Point(0, 0), new Point(graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight));
             spriteBatch.Draw(background, r, Color.White);
-
+            spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(graphics.PreferredBackBufferWidth / 2, 10), Color.White);
             /*
             spriteBatch.Draw(
                 SpaceBackground, 

@@ -158,7 +158,7 @@ namespace MonoGameWindowsStarter
         private void Shoot()
         {
             bullets.Add(new Bullet(game, content, X, Y, rotation));
-            shooting.Play(soundEffectVolume, 0, 0);
+            shooting.Play(soundEffectVolume * (float)0.4, 0, 0);
         }
 
         public void LoadContent(ContentManager content)
