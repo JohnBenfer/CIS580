@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 
+
 namespace MonoGameWindowsStarter
 {
     /// <summary>
@@ -13,7 +14,7 @@ namespace MonoGameWindowsStarter
     /// </summary>
     public class Game1 : Game
     {
-
+        
         // Window dimensions
         int WINDOW_WIDTH = 3000;
         int WINDOW_HEIGHT = 2000;
@@ -148,6 +149,7 @@ namespace MonoGameWindowsStarter
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if (!isGameOver)
@@ -212,11 +214,9 @@ namespace MonoGameWindowsStarter
                 {
                     Initialize();
                 }
-
+                SuppressDraw(); // suppress draw to lower cpu consumption
 
             }
-
-
 
         }
 

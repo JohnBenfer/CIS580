@@ -58,12 +58,12 @@ namespace MonoGameWindowsStarter
 
             speed = 8;
 
-            hitBox = new CircleHitBox(25, X, Y);
+            hitBox = new CircleHitBox(26, X, Y);
 
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 200, 133), null, Color.White, ConvertToRadians(rotation + 180), origin, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 300, 200), null, Color.White, ConvertToRadians(rotation + 180), origin, SpriteEffects.None, 0);
             foreach(Bullet b in bullets)
             {
                 b.Draw(spriteBatch);
@@ -163,7 +163,7 @@ namespace MonoGameWindowsStarter
 
         public void LoadContent(ContentManager content)
         {
-            texture = content.Load<Texture2D>("playerspaceship");
+            texture = content.Load<Texture2D>("Player");
             shooting = content.Load<SoundEffect>("Gun shot");
         }
 
