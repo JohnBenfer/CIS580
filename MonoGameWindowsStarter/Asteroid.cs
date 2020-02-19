@@ -15,13 +15,13 @@ namespace MonoGameWindowsStarter
         double Y;
         double XDelta;
         double YDelta;
-        Texture2D texture;
-        Texture2D Explosion1;
-        Texture2D Explosion2;
-        Texture2D Explosion3;
-        Texture2D Explosion4;
+        static Texture2D texture;
+        static Texture2D Explosion1;
+        static Texture2D Explosion2;
+        static Texture2D Explosion3;
+        static Texture2D Explosion4;
         Texture2D currentTexture;
-        Texture2D[] sprites;
+        static Texture2D[] sprites;
 
         int frame;
 
@@ -63,9 +63,6 @@ namespace MonoGameWindowsStarter
 
             speed = (int)(42*scale);
 
-            
-
-            
 
             width = texture.Width;
             height = texture.Height;
@@ -73,7 +70,7 @@ namespace MonoGameWindowsStarter
             Random random = new Random();
 
             X = random.Next(0, 3);
-            //Console.WriteLine(X);
+            
             if(X == 0)
             {
                 X = random.Next(-100, -1);

@@ -173,8 +173,6 @@ namespace MonoGameWindowsStarter
                 inactiveBullets.Push(b);
                 activeBullets.Remove(b);
             }
-            
-
         }
 
         private void Shoot()

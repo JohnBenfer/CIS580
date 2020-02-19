@@ -194,7 +194,7 @@ namespace MonoGameWindowsStarter
                           if (asteroid.hitBox.CollidesWith(b.hitBox) && !asteroid.Hit)
                         {
                             AsteroidsDestroyedByPlayer.Add(asteroid);
-                            BulletsHitAsteroid.Add(b);
+                            b.Killed = true;
                             asteroid.Exploding = true;
                             asteroid.Hit = true;
                             // play asteroid destroyed noise
@@ -202,11 +202,6 @@ namespace MonoGameWindowsStarter
                             level++;
                             score += 10;
                         }
-                    }
-                    foreach (Bullet b in BulletsHitAsteroid)
-                    {
-                        player.inactiveBullets.Push(b);
-                        player.activeBullets.Remove(b);
                     }
 
                     if (asteroid.OffScreen)
