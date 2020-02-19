@@ -27,8 +27,8 @@ namespace MonoGameWindowsStarter
 
         TimeSpan timer;
 
-        int screenWidth;
-        int screenHeight;
+        static int screenWidth;
+        static int screenHeight;
 
         public bool OffScreen = false;
         public bool Exploding = false;
@@ -37,17 +37,17 @@ namespace MonoGameWindowsStarter
         public int width;
         public int height;
 
-        double speed;
+        static double speed;
 
         public CircleHitBox hitBox;
 
-        public Color color;
+        public static Color color;
 
-        Vector2 origin;
+        static Vector2 origin;
 
         double rotation;
 
-        double scale;
+        static double scale;
 
         Game1 game;
 
@@ -171,7 +171,7 @@ namespace MonoGameWindowsStarter
 
         private void Explode()
         {
-            Console.WriteLine(frame);
+            
             
                 
             if ((timer.TotalMilliseconds * 7) > (game.FRAME_RATE - 58))
@@ -179,7 +179,6 @@ namespace MonoGameWindowsStarter
                     
                 frame++;
                 currentTexture = sprites[frame];
-                Console.WriteLine(frame);
                 timer -= new TimeSpan(0, 0, 0, 0, game.FRAME_RATE);
             }
 

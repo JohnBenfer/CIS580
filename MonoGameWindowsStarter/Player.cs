@@ -23,29 +23,30 @@ namespace MonoGameWindowsStarter
         public double X;
         public double Y;
 
-        int screenWidth;
-        int screenHeight;
+        static int screenWidth;
+        static int screenHeight;
 
         public int playerWidth;
         public int playerHeight;
 
         double speed;
 
-        public List<Bullet> bullets;
+        public Stack<Bullet> inactiveBullets;
+        public List<Bullet> activeBullets;
         ContentManager content;
         Game1 game;
 
         bool shootLock = false;
+        static int maxBullets = 20;
 
         public Player (Game1 game, ContentManager content)
         {
             screenHeight = game.graphics.PreferredBackBufferHeight;
             screenWidth = game.graphics.PreferredBackBufferWidth;
             this.content = content;
-            bullets = new List<Bullet>();
-            BulletModel bulletModel = new BulletModel(content, game);
             
-            InitializeBullets(20);
+            
+            
             LoadContent(content);
             this.game = game;
             this.soundEffectVolume = game.soundEffectVolume;
@@ -53,7 +54,9 @@ namespace MonoGameWindowsStarter
             X = screenWidth / 2;
             Y = screenHeight / 2;
             rotation = 0;
-
+            inactiveBullets = new Stack<Bullet>();
+            activeBullets = new List<Bullet>();
+            InitializeBullets(maxBullets);
             playerWidth = texture.Width;
             playerHeight = texture.Height;
 
@@ -69,13 +72,14 @@ namespace MonoGameWindowsStarter
         {
             int counter = 0;
             while (counter < n) {
-                bullets.Add(new Bullet(game, content, X, Y, rotation));
+                inactiveBullets.Push(new Bullet(game, content));
+                counter++;
             }
         }
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 300, 200), null, Color.White, ConvertToRadians(rotation + 180), origin, SpriteEffects.None, 0);
-            foreach(Bullet b in bullets)
+            foreach(Bullet b in activeBullets)
             {
                 if (b.isActive)
                 {
@@ -154,7 +158,7 @@ namespace MonoGameWindowsStarter
             hitBox.Y = Y;
 
             List<Bullet> temp = new List<Bullet>();
-            foreach(Bullet b in bullets)
+            foreach(Bullet b in activeBullets)
             {
                 b.Update();
                 if(b.Killed)
@@ -164,21 +168,33 @@ namespace MonoGameWindowsStarter
             }
             foreach (Bullet b in temp)
             {
-                bullets.Remove(b);
+                b.Killed = false;
+                b.isActive = false;
+                inactiveBullets.Push(b);
+                activeBullets.Remove(b);
             }
+            
 
         }
 
         private void Shoot()
         {
-            bullets.Add(new Bullet(game, content, X, Y, rotation));
+            Console.WriteLine("active: " + activeBullets.Count + "inactive: " + inactiveBullets.Count);
+            try
+            {
+                Bullet b = inactiveBullets.Pop().SpawnBullet(X, Y, rotation);
+                b.isActive = true;
+                activeBullets.Add(b);
+
+            } catch (Exception e)
+            {
+                Console.WriteLine("Failed");
+                return;   
+            }
             shooting.Play(soundEffectVolume * (float)0.4, 0, 0);
-        }
-
-        public void ActivateBullet()
-        {
 
         }
+
 
         public void LoadContent(ContentManager content)
         {

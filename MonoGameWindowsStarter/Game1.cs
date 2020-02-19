@@ -16,8 +16,8 @@ namespace MonoGameWindowsStarter
     {
         
         // Window dimensions
-        int WINDOW_WIDTH = 3000;
-        int WINDOW_HEIGHT = 2000;
+        int WINDOW_WIDTH = 1920;
+        int WINDOW_HEIGHT = 1080;
 
         public GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -40,7 +40,7 @@ namespace MonoGameWindowsStarter
         bool isGameOver;
         int width;
         int height;
-        
+        int drawCount;
 
 
 
@@ -71,7 +71,7 @@ namespace MonoGameWindowsStarter
             //graphics.ApplyChanges();
 
             SetGraphics();
-
+            drawCount = 0;
             soundEffectVolume = 0.15f;
             musicVolume = 0.2f;
             level = 1;
@@ -87,6 +87,7 @@ namespace MonoGameWindowsStarter
             MediaPlayer.Volume = musicVolume;
             score = 0;
             isGameOver = false;
+            player = new Player(this, Content);
         }
 
         private void SetMaxAsteroids()
@@ -124,7 +125,7 @@ namespace MonoGameWindowsStarter
             
             background = Content.Load<Texture2D>("Space");
             //SpaceBackground = Content.Load<Texture2D>("AsteroidSpriteSheet");
-            player = new Player(this, Content);
+            
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -166,14 +167,29 @@ namespace MonoGameWindowsStarter
 
                     if(asteroid.hitBox.X + (asteroid.width / 2) < (player.X - player.playerWidth) || asteroid.hitBox.X - (asteroid.width / 2) > (player.X + player.playerWidth))
                     {
+                        try
+                        {
+                            closeAsteroids.Remove(asteroid);
+                        } catch(Exception e)
+                        {
+
+                        }
                         // asteroid is not close to player in X dimension
                     } else
                     {
-                        closeAsteroids.Add(asteroid);
+                        //closeAsteroids.Add(asteroid);
                     }
+
+                    if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding) // game over
+                    {
+                        GameOver();
+                        return;
+                    }
+
+
                     asteroid.Update(gameTime);
 
-                    foreach (Bullet b in player.bullets)
+                    foreach (Bullet b in player.activeBullets)
                     {
                           if (asteroid.hitBox.CollidesWith(b.hitBox) && !asteroid.Hit)
                         {
@@ -189,7 +205,8 @@ namespace MonoGameWindowsStarter
                     }
                     foreach (Bullet b in BulletsHitAsteroid)
                     {
-                        player.bullets.Remove(b);
+                        player.inactiveBullets.Push(b);
+                        player.activeBullets.Remove(b);
                     }
 
                     if (asteroid.OffScreen)
@@ -229,7 +246,13 @@ namespace MonoGameWindowsStarter
                 {
                     Initialize();
                 }
-                SuppressDraw(); // suppress draw to lower cpu consumption
+                if (drawCount == 2)
+                {
+                    SuppressDraw(); // suppress draw to lower cpu consumption after draw() has happened twice
+                } else
+                {
+                    drawCount++;
+                }
 
             }
 

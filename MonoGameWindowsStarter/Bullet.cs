@@ -9,8 +9,16 @@ using System.Threading.Tasks;
 
 namespace MonoGameWindowsStarter
 {
-    class Bullet : BulletModel
+    class Bullet
     {
+        public static Texture2D texture;
+        public static int screenWidth;
+        public static int screenHeight;
+        static int bulletWidth;
+        static int bulletHeight;
+        public static double speed;
+        public static Vector2 origin;
+
         public bool isActive;
         double X;
         double Y;
@@ -21,9 +29,15 @@ namespace MonoGameWindowsStarter
 
         double rotation;
 
-        public Bullet(ContentManager content, Game1 game, double playerX, double playerY, double playerRotation)
+        public Bullet(Game1 game, ContentManager content)
         {
-            BulletModel bm = new BulletModel(content, game);
+            texture = content.Load<Texture2D>("Bullet");
+            screenHeight = game.graphics.PreferredBackBufferHeight;
+            screenWidth = game.graphics.PreferredBackBufferWidth;
+            bulletWidth = texture.Width;
+            bulletHeight = texture.Height;
+            speed = 18;
+            origin = new Vector2(bulletWidth / 2, bulletHeight / 2);
 
             isActive = false;
         }
@@ -34,13 +48,15 @@ namespace MonoGameWindowsStarter
         /// <param name="playerX"></param>
         /// <param name="PlayerY"></param>
         /// <param name="playerRotation"></param>
-        public void SpawnBullet(double playerX, double PlayerY, double playerRotation)
+        public Bullet SpawnBullet(double playerX, double PlayerY, double playerRotation)
         {
             isActive = true;
+            Killed = false;
             rotation = playerRotation;
             X = playerX;
             Y = PlayerY;
             hitBox = new CircleHitBox(10, X, Y);
+            return this;
         }
 
         public void Update()
