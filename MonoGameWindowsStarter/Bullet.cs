@@ -19,18 +19,21 @@ namespace MonoGameWindowsStarter
         public static double speed;
         public static Vector2 origin;
 
+        BulletModel bulletModel;
+
         public bool isActive;
-        double X;
-        double Y;
+        public double X;
+        public double Y;
         public CircleHitBox hitBox;
         
 
         public bool Killed = false;
 
-        double rotation;
+        public double rotation;
 
         public Bullet(Game1 game, ContentManager content)
         {
+            bulletModel = game.bulletModel;
             texture = content.Load<Texture2D>("Bullet");
             screenHeight = game.graphics.PreferredBackBufferHeight;
             screenWidth = game.graphics.PreferredBackBufferWidth;

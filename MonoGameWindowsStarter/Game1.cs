@@ -41,7 +41,7 @@ namespace MonoGameWindowsStarter
         int width;
         int height;
         int drawCount;
-
+        BulletModel bulletModel;
 
 
 
@@ -88,6 +88,7 @@ namespace MonoGameWindowsStarter
             score = 0;
             isGameOver = false;
             player = new Player(this, Content);
+            bulletModel = new BulletModel(Content, this);
         }
 
         private void SetMaxAsteroids()
