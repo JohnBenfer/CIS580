@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace MonoGameWindowsStarter
 {
-    class SpriteSheet
+    class AsteroidModel
     {
-
-
     }
 }

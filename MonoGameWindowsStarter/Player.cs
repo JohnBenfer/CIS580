@@ -26,8 +26,8 @@ namespace MonoGameWindowsStarter
         int screenWidth;
         int screenHeight;
 
-        int playerWidth;
-        int playerHeight;
+        public int playerWidth;
+        public int playerHeight;
 
         double speed;
 
@@ -43,6 +43,9 @@ namespace MonoGameWindowsStarter
             screenWidth = game.graphics.PreferredBackBufferWidth;
             this.content = content;
             bullets = new List<Bullet>();
+            BulletModel bulletModel = new BulletModel(content, game);
+            
+            InitializeBullets(20);
             LoadContent(content);
             this.game = game;
             this.soundEffectVolume = game.soundEffectVolume;
@@ -61,12 +64,23 @@ namespace MonoGameWindowsStarter
             hitBox = new CircleHitBox(26, X, Y);
 
         }
+
+        private void InitializeBullets(int n)
+        {
+            int counter = 0;
+            while (counter < n) {
+                bullets.Add(new Bullet(game, content, X, Y, rotation));
+            }
+        }
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, new Rectangle((int)X, (int)Y, 300, 200), null, Color.White, ConvertToRadians(rotation + 180), origin, SpriteEffects.None, 0);
             foreach(Bullet b in bullets)
             {
-                b.Draw(spriteBatch);
+                if (b.isActive)
+                {
+                    b.Draw(spriteBatch);
+                }
             }
         }
 
@@ -159,6 +173,11 @@ namespace MonoGameWindowsStarter
         {
             bullets.Add(new Bullet(game, content, X, Y, rotation));
             shooting.Play(soundEffectVolume * (float)0.4, 0, 0);
+        }
+
+        public void ActivateBullet()
+        {
+
         }
 
         public void LoadContent(ContentManager content)

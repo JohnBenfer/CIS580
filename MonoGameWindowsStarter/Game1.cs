@@ -25,6 +25,7 @@ namespace MonoGameWindowsStarter
         int asteroidCount;
         int level;
         List<Asteroid> asteroids;
+        List<Asteroid> closeAsteroids;
         int maxAsteroids;
         Texture2D background;
         Texture2D SpaceBackground;
@@ -76,6 +77,7 @@ namespace MonoGameWindowsStarter
             level = 1;
             asteroidCount = 0;
             asteroids = new List<Asteroid>();
+            closeAsteroids = new List<Asteroid>();
             width = graphics.PreferredBackBufferWidth;
             height = graphics.PreferredBackBufferHeight;
             SetMaxAsteroids();
@@ -161,12 +163,15 @@ namespace MonoGameWindowsStarter
                 List<Bullet> BulletsHitAsteroid = new List<Bullet>();
                 foreach (Asteroid asteroid in asteroids)
                 {
-                    asteroid.Update(gameTime);
-                    if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding) // game over
+
+                    if(asteroid.hitBox.X + (asteroid.width / 2) < (player.X - player.playerWidth) || asteroid.hitBox.X - (asteroid.width / 2) > (player.X + player.playerWidth))
                     {
-                        GameOver();
-                        return;
+                        // asteroid is not close to player in X dimension
+                    } else
+                    {
+                        closeAsteroids.Add(asteroid);
                     }
+                    asteroid.Update(gameTime);
 
                     foreach (Bullet b in player.bullets)
                     {
@@ -191,6 +196,16 @@ namespace MonoGameWindowsStarter
                     {
                         AsteroidsOffScreen.Add(asteroid);
 
+                    }
+                }
+
+                // spatial partitioned asteroid check if hitting player
+                foreach(Asteroid asteroid in closeAsteroids)
+                {
+                    if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding) // game over
+                    {
+                        GameOver();
+                        return;
                     }
                 }
 

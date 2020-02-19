@@ -9,43 +9,38 @@ using System.Threading.Tasks;
 
 namespace MonoGameWindowsStarter
 {
-    class Bullet
+    class Bullet : BulletModel
     {
+        public bool isActive;
         double X;
         double Y;
         public CircleHitBox hitBox;
-        Texture2D texture;
+        
 
         public bool Killed = false;
 
-        int screenWidth;
-        int screenHeight;
-
-        int bulletWidth;
-        int bulletHeight;
-
-        double speed;
-
-        Vector2 origin;
-
         double rotation;
 
-        public Bullet(Game1 game, ContentManager content, double playerX, double playerY, double playerRotation)
+        public Bullet(ContentManager content, Game1 game, double playerX, double playerY, double playerRotation)
         {
-            LoadContent(content);
-            screenHeight = game.graphics.PreferredBackBufferHeight;
-            screenWidth = game.graphics.PreferredBackBufferWidth;
+            BulletModel bm = new BulletModel(content, game);
 
+            isActive = false;
+        }
+
+        /// <summary>
+        /// activates the bullet and will start updating and drawing
+        /// </summary>
+        /// <param name="playerX"></param>
+        /// <param name="PlayerY"></param>
+        /// <param name="playerRotation"></param>
+        public void SpawnBullet(double playerX, double PlayerY, double playerRotation)
+        {
+            isActive = true;
             rotation = playerRotation;
-            bulletWidth = texture.Width;
-            bulletHeight = texture.Height;
-            origin = new Vector2(bulletWidth / 2, bulletHeight / 2);
-            speed = 18;
             X = playerX;
-            Y = playerY;
-
+            Y = PlayerY;
             hitBox = new CircleHitBox(10, X, Y);
-
         }
 
         public void Update()

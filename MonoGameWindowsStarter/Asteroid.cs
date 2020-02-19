@@ -34,8 +34,8 @@ namespace MonoGameWindowsStarter
         public bool Exploding = false;
         public bool Hit;
 
-        int ghostWidth;
-        int ghostHeight;
+        public int width;
+        public int height;
 
         double speed;
 
@@ -67,8 +67,8 @@ namespace MonoGameWindowsStarter
 
             
 
-            ghostWidth = texture.Width;
-            ghostHeight = texture.Height;
+            width = texture.Width;
+            height = texture.Height;
 
             Random random = new Random();
 
@@ -98,7 +98,7 @@ namespace MonoGameWindowsStarter
 
             color = Color.White;
 
-            origin = new Vector2(ghostWidth / 2, ghostHeight / 2);
+            origin = new Vector2(width / 2, height / 2);
 
             hitBox = new CircleHitBox((int)(52*scale), X, Y);
             
