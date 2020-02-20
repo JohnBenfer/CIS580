@@ -160,6 +160,7 @@ namespace MonoGameWindowsStarter
             
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
             if (!isGameOver)
             {
                 Console.WriteLine(closeAsteroids.Count);
@@ -171,6 +172,7 @@ namespace MonoGameWindowsStarter
                 {
 
                     // this adds asteroids to a spatially aware list
+
                     if(((asteroid.hitBox.X + (asteroid.hitBox.radius) > (player.X - player.hitBox.radius)) // right side of asteroid and left side of player
                         && (asteroid.hitBox.X + (asteroid.hitBox.radius) < (player.X + player.hitBox.radius))) // right side of asteroid and right side of player
                         || ((asteroid.hitBox.X - (asteroid.hitBox.radius) < (player.X + player.hitBox.radius)) // left side of asteroid and right side of player
@@ -215,18 +217,8 @@ namespace MonoGameWindowsStarter
                         }
                         catch (Exception)
                         {
-
                         }
                     }
-
-
-                    /*
-                    if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding) // game over
-                    {
-                        GameOver();
-                        return;
-                    }
-                    */
 
                     asteroid.Update(gameTime);
 
@@ -248,7 +240,6 @@ namespace MonoGameWindowsStarter
                     if (asteroid.OffScreen)
                     {
                         AsteroidsOffScreen.Add(asteroid);
-
                     }
 
                 }

@@ -64,7 +64,7 @@ namespace MonoGameWindowsStarter
 
             speed = 8;
 
-            hitBox = new CircleHitBox(26, X, Y);
+            hitBox = new CircleHitBox(40, X, Y);
 
         }
 
