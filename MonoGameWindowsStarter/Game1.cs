@@ -42,6 +42,8 @@ namespace MonoGameWindowsStarter
         int height;
         int drawCount;
         BulletModel bulletModel;
+        bool nearX;
+        bool nearY;
 
 
 
@@ -89,6 +91,8 @@ namespace MonoGameWindowsStarter
             isGameOver = false;
             player = new Player(this, Content);
             bulletModel = new BulletModel(Content, this);
+            nearX = false;
+            nearY = false;
         }
 
         private void SetMaxAsteroids()
@@ -158,7 +162,7 @@ namespace MonoGameWindowsStarter
                 Exit();
             if (!isGameOver)
             {
-                
+                Console.WriteLine(closeAsteroids.Count);
                 player.Update();
                 List<Asteroid> AsteroidsDestroyedByPlayer = new List<Asteroid>();
                 List<Asteroid> AsteroidsOffScreen = new List<Asteroid>();
@@ -166,27 +170,63 @@ namespace MonoGameWindowsStarter
                 foreach (Asteroid asteroid in asteroids)
                 {
 
-                    if(asteroid.hitBox.X + (asteroid.width / 2) < (player.X - player.playerWidth) || asteroid.hitBox.X - (asteroid.width / 2) > (player.X + player.playerWidth))
+                    // this adds asteroids to a spatially aware list
+                    if(((asteroid.hitBox.X + (asteroid.hitBox.radius) > (player.X - player.hitBox.radius)) // right side of asteroid and left side of player
+                        && (asteroid.hitBox.X + (asteroid.hitBox.radius) < (player.X + player.hitBox.radius))) // right side of asteroid and right side of player
+                        || ((asteroid.hitBox.X - (asteroid.hitBox.radius) < (player.X + player.hitBox.radius)) // left side of asteroid and right side of player
+                        && (asteroid.hitBox.X - (asteroid.hitBox.radius) > (player.X - player.hitBox.radius)))) // left side of asteroid and left side of player
+                    {
+                        //asteroid.color = Color.Green;
+                        nearX = true;
+                        
+                    } else 
+                    {
+
+                        nearX = false;
+                    }
+
+                    if (((asteroid.hitBox.Y + (asteroid.hitBox.radius) > (player.Y - player.hitBox.radius)) // bottom of asteroid and top of player
+                        && (asteroid.hitBox.Y + (asteroid.hitBox.radius) < (player.Y + player.hitBox.radius))) // bottom of asteroid and bottom of player
+                        || ((asteroid.hitBox.Y - (asteroid.hitBox.radius) < (player.Y + player.hitBox.radius)) // top of asteroid and bottom of player
+                        && (asteroid.hitBox.Y - (asteroid.hitBox.radius) > (player.Y - player.hitBox.radius)))) // top of asteroid and top of player
+                    {
+                        // asteroid is near player in Y
+                        //asteroid.color = Color.Blue;
+                        nearY = true;
+                    }
+                    else
+                    {
+                        nearY = false;
+                    }
+
+                    if (nearX && nearY)
+                    {
+                        if (!closeAsteroids.Contains(asteroid))
+                        {
+                            closeAsteroids.Add(asteroid);
+                        }
+                        //asteroid.color = Color.Red;
+                    }
+                    else
                     {
                         try
                         {
                             closeAsteroids.Remove(asteroid);
-                        } catch(Exception e)
+                        }
+                        catch (Exception)
                         {
 
                         }
-                        // asteroid is not close to player in X dimension
-                    } else
-                    {
-                        //closeAsteroids.Add(asteroid);
                     }
 
+
+                    /*
                     if (asteroid.hitBox.CollidesWith(player.hitBox) && !asteroid.Exploding) // game over
                     {
                         GameOver();
                         return;
                     }
-
+                    */
 
                     asteroid.Update(gameTime);
 
@@ -210,6 +250,7 @@ namespace MonoGameWindowsStarter
                         AsteroidsOffScreen.Add(asteroid);
 
                     }
+
                 }
 
                 // spatial partitioned asteroid check if hitting player
@@ -229,7 +270,7 @@ namespace MonoGameWindowsStarter
                 if (asteroids.Count < level && asteroids.Count < maxAsteroids)
                 {
                     asteroids.Add(new Asteroid(this, Content, player.X, player.Y));
-
+                    
                 }
 
                 base.Update(gameTime);
@@ -262,6 +303,13 @@ namespace MonoGameWindowsStarter
                 if (!a.Exploding)
                 {
                     asteroids.Remove(a);
+                    try
+                    {
+                        closeAsteroids.Remove(a);
+                    } catch(Exception e)
+                    {
+
+                    }
                 }
             }
         }

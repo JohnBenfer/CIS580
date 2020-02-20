@@ -19,7 +19,7 @@ namespace MonoGameWindowsStarter
         public static double speed;
         public static Vector2 origin;
 
-        BulletModel bulletModel;
+        //BulletModel bulletModel;
 
         public bool isActive;
         public double X;
@@ -33,7 +33,7 @@ namespace MonoGameWindowsStarter
 
         public Bullet(Game1 game, ContentManager content)
         {
-            bulletModel = game.bulletModel;
+            //bulletModel = game.bulletModel;
             texture = content.Load<Texture2D>("Bullet");
             screenHeight = game.graphics.PreferredBackBufferHeight;
             screenWidth = game.graphics.PreferredBackBufferWidth;

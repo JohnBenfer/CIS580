@@ -41,7 +41,7 @@ namespace MonoGameWindowsStarter
 
         public CircleHitBox hitBox;
 
-        public static Color color;
+        public Color color;
 
         static Vector2 origin;
 
